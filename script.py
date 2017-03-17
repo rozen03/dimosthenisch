@@ -1,4 +1,4 @@
- q#!/usr/bin/python3
+#!/usr/bin/python3
 from bs4 import BeautifulSoup
 try:
     import urllib.request as urllib2
@@ -41,7 +41,7 @@ class DownloadThread(threading.Thread):
 		self.url=url
 		self.year=str(year)
 		self.fileName=self.year+"/"+fileName
-	@retry(Exception, tries=100000)
+	@retry(stop_max_attempt_number=100000)
 	def run(self):
 		with db_session:
 			if File.get(fileName=self.fileName):
@@ -86,6 +86,8 @@ def scrapYear(year,page):
 			misticUrl="http://www.et.gr"+coso
 			DownloadThread(fileName.strip()+".pdf",misticUrl,year).start()
 		return True
+	except AttributeError as a:
+		print("All year",year,"downloads have been started")
 	except Exception as e:
 		print(type(e))
 		print(e)
@@ -95,7 +97,7 @@ def scrapYear(year,page):
 url="http://www.et.gr/idocs-nph/search/fekForm.html"
 for year in range(1833,2018):
 #for year in range(2000,2018):
-	print("Downloading Year: ",year)
+	print("Starting Year: ",year,"Downloads")
 	newPages=True
 	count=1
 	while (newPages):
